@@ -13,7 +13,7 @@ const showMenu = ref(false);
       :class="route.fullPath === '/' ? 'max-w-[1150px]' : ''"
       class="mx-auto flex w-full items-center justify-between px-6"
     >
-      <div :class="route.fullPath === '/' ? 'w-[80px]' : 'w-[70px] lg:w-[20%]'">
+      <div :class="route.fullPath === '/' ? 'w-[80%]' : 'w-[70%] lg:w-[20%]'">
         <nuxt-link to="/">
           <img width="115" src="~/assets/images/tiktok-logo.png" alt="" />
         </nuxt-link>

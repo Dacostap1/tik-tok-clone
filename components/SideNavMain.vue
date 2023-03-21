@@ -1,5 +1,4 @@
 <script setup>
-import { ref } from "vue";
 import MenuItem from "./MenuItem.vue";
 import MenuItemFollow from "./MenuItemFollow.vue";
 

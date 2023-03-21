@@ -1,5 +1,4 @@
 <script setup>
-import { ref } from "vue";
 import Navbar from "~~/components/Navbar.vue";
 import SideNavMain from "~~/components/SideNavMain.vue";
 
@@ -15,6 +14,7 @@ const route = useRoute();
     <div class="">
       <SideNavMain></SideNavMain>
     </div>
+    <slot></slot>
   </div>
 </template>
 

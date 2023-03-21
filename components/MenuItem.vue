@@ -1,6 +1,4 @@
 <script setup>
-import { toRefs } from "vue";
-
 const props = defineProps(["iconString", "colorString", "sizeString"]);
 const { iconString, colorString, sizeString } = toRefs(props);
 

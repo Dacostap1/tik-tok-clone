@@ -1,5 +1,4 @@
 <script setup>
-import { ref } from "vue";
 const route = useRoute();
 const showMenu = ref(false);
 </script>

@@ -40,7 +40,7 @@ onMounted(() => {
         This is some text
       </div>
 
-      <div class="text=[14px] pb-0.5 text-gray-500">
+      <div class="pb-0.5 text-[14px] text-gray-500">
         #fun #cool #SuperAwesome
       </div>
 

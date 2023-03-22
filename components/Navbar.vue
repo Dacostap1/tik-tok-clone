@@ -1,5 +1,7 @@
 <script setup>
 const route = useRoute();
+
+const { $userStore, $generalStore } = useNuxtApp();
 const showMenu = ref(false);
 </script>
 
@@ -42,8 +44,9 @@ const showMenu = ref(false);
           <span class="px-2 text-[15px] font-medium">Upload</span>
         </button>
 
-        <div v-if="false" class="flex items-center">
+        <div v-if="!$userStore.id" class="flex items-center">
           <button
+            @click="$generalStore.isLoginOpen = true"
             class="flex items-center rounded-md border bg-[#F02c56] px-3 py-[6px] text-white"
           >
             <span class="mx-4 text-[15px] font-medium">Login</span>
@@ -51,7 +54,7 @@ const showMenu = ref(false);
           <Icon name="mdi:dots-vertical" color="#161724" size="22"></Icon>
         </div>
 
-        <div class="flex items-center">
+        <div v-else class="flex items-center">
           <Icon
             class="ml-1 mr-4"
             name="carbon:send-alt"

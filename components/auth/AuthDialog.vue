@@ -2,6 +2,8 @@
 import Login from "./Login.vue";
 import Register from "./Register.vue";
 
+const { $userStore, $generalStore } = useNuxtApp();
+
 const isRegister = ref(true);
 </script>
 
@@ -12,7 +14,10 @@ const isRegister = ref(true);
   >
     <div class="relative h-[70%] w-full max-w-[470px] rounded-lg bg-white p-4">
       <div class="flex w-full justify-end">
-        <button class="rounded-full bg-gray-100 p-1.5">
+        <button
+          @click="$generalStore.isLoginOpen = false"
+          class="rounded-full bg-gray-100 p-1.5"
+        >
           <Icon name="mdi:close" size="26"></Icon>
         </button>
       </div>

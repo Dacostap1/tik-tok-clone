@@ -6,15 +6,15 @@ const route = useRoute();
 </script>
 
 <template>
-  <Navbar></Navbar>
+  <Navbar />
   <div
     :class="route.fullPath === '/' ? 'max-w-[1140px]' : ''"
     class="mx-auto flex w-full justify-between px-0 lg:px-2.5"
   >
-    <div class="">
-      <SideNavMain></SideNavMain>
+    <div>
+      <SideNavMain />
     </div>
-    <slot></slot>
+    <slot />
   </div>
 </template>
 

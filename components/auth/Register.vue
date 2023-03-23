@@ -1,6 +1,8 @@
 <script setup>
 import TextInput from "../TextInput.vue";
 
+const { $userStore, $generalStore } = useNuxtApp();
+
 const name = ref(null);
 const email = ref(null);
 const password = ref(null);
@@ -8,9 +10,27 @@ const confirmPassword = ref(null);
 
 const errors = ref(null);
 
-const register = () => {
+const register = async () => {
   console.log(email.value);
   console.log(password.value);
+
+  errors.value = null;
+
+  try {
+    await $userStore.getToken();
+    await $userStore.register(
+      name.value,
+      email.value,
+      password.value,
+      confirmPassword.value
+    );
+    await $userStore.getUser();
+
+    $generalStore.isLoginOpen = false;
+  } catch (error) {
+    console.log(error);
+    errors.value = error.response.data.errors;
+  }
 };
 </script>
 
@@ -24,7 +44,7 @@ const register = () => {
       v-model:input="name"
       input-type="text"
       :auto-focus="true"
-      error=""
+      :error="errors && errors.name ? errors.name[0] : ''"
     ></TextInput>
   </div>
 
@@ -33,7 +53,7 @@ const register = () => {
       placeholder="Email address"
       v-model:input="email"
       input-type="email"
-      error=""
+      :error="errors && errors.email ? errors.email[0] : ''"
     ></TextInput>
   </div>
 
@@ -42,7 +62,7 @@ const register = () => {
       placeholder="Password"
       v-model:input="password"
       input-type="password"
-      error=""
+      :error="errors && errors.password ? errors.password[0] : ''"
     ></TextInput>
   </div>
 
@@ -51,7 +71,7 @@ const register = () => {
       placeholder="Confirm password"
       v-model:input="confirmPassword"
       input-type="password"
-      error=""
+      :error="errors && errors.confirmPassword ? errors.confirmPassword[0] : ''"
     ></TextInput>
   </div>
 

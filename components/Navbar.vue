@@ -1,8 +1,36 @@
 <script setup>
 const route = useRoute();
+const router = useRouter();
 
 const { $userStore, $generalStore } = useNuxtApp();
 const showMenu = ref(false);
+
+onMounted(() => {
+  document.addEventListener("mouseup", (e) => {
+    if (!showMenu.value) return;
+    const popupMenu = document.getElementById("PopupMenu");
+    if (!popupMenu.contains(e.target)) {
+      showMenu.value = false;
+    }
+  });
+});
+
+const isLoggedIn = () => {
+  if ($userStore.id) {
+    router.push("/upload");
+  } else {
+    $generalStore.isLoginOpen = true;
+  }
+};
+
+const logout = () => {
+  try {
+    $userStore.logout();
+    router.push("/");
+  } catch (error) {
+    console.log(error);
+  }
+};
 </script>
 
 <template>
@@ -38,6 +66,7 @@ const showMenu = ref(false);
         class="flex w-full min-w-[275px] max-w-[320px] items-center justify-end gap-3"
       >
         <button
+          @click="isLoggedIn"
           class="flex items-center rounded-sm border px-3 py-[6px] hover:bg-gray-100"
         >
           <Icon name="mdi:plus" color="#000000" size="22"></Icon>
@@ -72,7 +101,7 @@ const showMenu = ref(false);
               <img
                 class="rounded-full"
                 width="33"
-                src="https://picsum.photos/id/83/300/320"
+                :src="$userStore.image"
                 alt=""
               />
             </button>
@@ -84,6 +113,7 @@ const showMenu = ref(false);
               class="absolute top-[43px] -right-2 w-[200px] rounded-lg border bg-white py-1.5 shadow-xl"
             >
               <nuxt-link
+                :to="`/profile/${$userStore.id}`"
                 @click="showMenu = false"
                 class="flex cursor-pointer items-center justify-start py-3 px-2 hover:bg-gray-100"
               >
@@ -91,7 +121,7 @@ const showMenu = ref(false);
                 <span class="pl-2 text-sm font-semibold">Profile</span>
               </nuxt-link>
               <div
-                @click="showMenu = false"
+                @click="logout"
                 class="flex cursor-pointer items-center justify-start border-t py-3 px-1.5 hover:bg-gray-100"
               >
                 <Icon name="ic:outline-login" size="20"></Icon>

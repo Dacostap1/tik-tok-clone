@@ -7,6 +7,11 @@ export default defineNuxtConfig({
   pages: true,
   css: ["~/assets/css/main.css"],
   modules: ["nuxt-icon", "@pinia/nuxt", "@pinia-plugin-persistedstate/nuxt"],
+  components: [
+    { path: "~/components" },
+    { path: "~/components/auth", extensions: ["vue"] },
+    { path: "~/components/profile", extensions: ["vue"] },
+  ],
   postcss: {
     plugins: {
       tailwindcss: {},

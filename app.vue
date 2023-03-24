@@ -8,6 +8,32 @@
 <script setup>
 import { storeToRefs } from "pinia";
 
-const { $generalStore } = useNuxtApp();
+const { $userStore, $generalStore } = useNuxtApp();
 const { isLoginOpen, isEditProfileOpen } = storeToRefs($generalStore);
+
+watch(
+  () => isLoginOpen.value,
+  (val) => $generalStore.activateOverflow(val)
+);
+watch(
+  () => isEditProfileOpen.value,
+  (val) => $generalStore.activateOverflow(val)
+);
+
+onMounted(async () => {
+  //Al hacer refresh no mantenga abierto los dialogs
+  isLoginOpen.value = false;
+  isEditProfileOpen.value = false;
+
+  try {
+    await $generalStore.hasSessionExpired();
+
+    //Si expira intentamos recuperar el usuario
+    if ($userStore.id) {
+      $userStore.getUser();
+    }
+  } catch (error) {
+    console.log(error);
+  }
+});
 </script>

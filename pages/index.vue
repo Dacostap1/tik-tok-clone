@@ -7,6 +7,14 @@ import PostMain from "~~/components/PostMain.vue";
   <MainLayout>
     <div class="w-[calc(100%-90px)] max-w-[690px] pt-[80px]">
       <PostMain />
+      <PostMain />
+      <PostMain />
+      <PostMain />
+      <PostMain />
+      <PostMain />
+      <PostMain />
+      <PostMain />
+      <PostMain />
     </div>
   </MainLayout>
 </template>

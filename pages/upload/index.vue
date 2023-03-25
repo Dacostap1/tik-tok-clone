@@ -1,6 +1,9 @@
 <script setup>
 import UploadLayout from "~~/layouts/UploadLayout.vue";
 
+const { $userStore } = useNuxtApp();
+const router = useRouter();
+
 const file = ref(null);
 const fileData = ref(null);
 const fileDisplay = ref(null);
@@ -45,6 +48,32 @@ const onDrop = (e) => {
   fileDisplay.value = URL.createObjectURL(e.dataTransfer.files[0]);
 };
 
+const createPost = async () => {
+  errors.value = null;
+
+  const data = new FormData();
+
+  data.append("video", fileData.value || "");
+  data.append("text", caption.value || "");
+
+  if (fileData.value && caption.value) {
+    isUploading.value = true;
+  }
+
+  try {
+    const res = await $userStore.createPost(data);
+    if (res.status == 200) {
+      setTimeout(() => {
+        router.push("/profile/" + $userStore.id);
+        isUploading.value = false;
+      }, 1000);
+    }
+  } catch (error) {
+    errors.value = error.response.data.errors;
+    isUploading.value = false;
+  }
+};
+
 const discard = () => {
   file.value = null;
   fileDisplay.value = null;
@@ -61,6 +90,19 @@ const clearVideo = () => {
 
 <template>
   <UploadError :error-type="errorType"></UploadError>
+
+  <div
+    v-if="isUploading"
+    class="fixed top-0 left-0 z-50 flex h-screen w-full items-center justify-center bg-black bg-opacity-50"
+  >
+    <Icon
+      class="ml-1 animate-spin"
+      name="mingcute:loading-line"
+      color="#FFFFFF"
+      size="100"
+    ></Icon>
+  </div>
+
   <UploadLayout>
     <div
       class="mt-[80px] mb-[40px] w-full rounded-md bg-white py-6 px-4 shadow-lg md:px-10"
@@ -198,10 +240,22 @@ const clearVideo = () => {
               Discard
             </button>
             <button
+              @click="createPost"
               class="mt-8 rounded-sm border bg-[#F02C56] px-10 py-2.5 text-[16px] text-white"
             >
               Post
             </button>
+          </div>
+
+          <!-- Show Errors -->
+
+          <div v-if="errors" class="mt-4">
+            <div v-if="errors && errors.video" class="text-red-600">
+              {{ errors.video[0] }}
+            </div>
+            <div v-if="errors && errors.text" class="text-red-600">
+              {{ errors.text[0] }}
+            </div>
           </div>
         </div>
       </div>

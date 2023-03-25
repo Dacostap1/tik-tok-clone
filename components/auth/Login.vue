@@ -7,7 +7,7 @@ const password = ref(null);
 const errors = ref(null);
 
 onMounted(() => {
-  email.value = "dacostap@gmail.com";
+  email.value = "dacostap1@gmail.com";
   password.value = "12345678";
 });
 

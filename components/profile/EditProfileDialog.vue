@@ -14,6 +14,12 @@ const userImage = ref(null);
 const userBio = ref(null);
 const isUpdated = ref(null);
 
+onMounted(() => {
+  userName.value = name.value;
+  userBio.value = bio.value;
+  userImage.value = image.value;
+});
+
 watch(
   () => userName.value,
   () => {
@@ -36,15 +42,49 @@ watch(
   }
 );
 
-onMounted(() => {
-  userName.value = name.value;
-  userBio.value = bio.value;
-  userImage.value = image.value;
-});
-
 const getUploadedImage = (e) => {
   file.value = e.target.files[0];
   uploadedImage.value = URL.createObjectURL(file.value);
+};
+
+const cropAndUpdateImage = async () => {
+  const { coordinates } = cropper.value.getResult(); //by ref
+
+  console.log(coordinates);
+  console.log(file.value);
+
+  const data = new FormData();
+
+  data.append("image", file.value || "");
+  data.append("height", coordinates.height || "");
+  data.append("width", coordinates.width || "");
+  data.append("left", coordinates.left || "");
+  data.append("top", coordinates.top || "");
+
+  try {
+    await $userStore.updateUserImage(data);
+    await $userStore.getUser();
+
+    userImage.value = image.value;
+    uploadedImage.value = null;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const updateUserInfo = async () => {
+  try {
+    await $userStore.updateUser(userName.value, userBio.value);
+    await $userStore.getUser();
+    // await $profileStore.getProfile(route.params.id);
+    userName.value = name.value;
+    userBio.value = bio.value;
+    setTimeout(() => {
+      $generalStore.isEditProfileOpen = false;
+    }, 100);
+  } catch (error) {
+    console.log(error);
+  }
 };
 </script>
 
@@ -84,11 +124,7 @@ const getUploadedImage = (e) => {
 
             <div class="flex items-center justify-center sm:-mt-6">
               <label for="image" class="relative cursor-pointer">
-                <img
-                  class="rounded-full"
-                  width="95"
-                  src="https://picsum.photos/id/83/300/320"
-                />
+                <img class="rounded-full" width="95" :src="userImage" />
                 <div
                   class="absolute bottom-0 right-0 inline-block w-[32px] rounded-full border border-gray-300 bg-white p-1 shadow-xl"
                 >
@@ -179,6 +215,7 @@ const getUploadedImage = (e) => {
         id="ButtonSection"
         class="absolute left-0 bottom-0 w-full border-t border-t-gray-300 p-5"
       >
+        <!-- Actions to update Info -->
         <div
           id="UpdateInfoButtons"
           v-if="!uploadedImage"
@@ -198,6 +235,23 @@ const getUploadedImage = (e) => {
             class="ml-3 flex items-center rounded-md border bg-[#F02C56] px-3 py-[6px] text-white"
           >
             <span class="mx-4 text-[15px] font-medium">Save</span>
+          </button>
+        </div>
+
+        <!-- Actions to update Image Crooper -->
+        <div id="CropperButtons" v-else class="flex items-center justify-end">
+          <button
+            @click="uploadedImage = null"
+            class="flex items-center rounded-sm border px-3 py-[6px] hover:bg-gray-100"
+          >
+            <span class="px-2 text-[15px] font-medium">Cancel</span>
+          </button>
+
+          <button
+            @click="cropAndUpdateImage()"
+            class="ml-3 flex items-center rounded-md border bg-[#F02C56] px-3 py-[6px] text-white"
+          >
+            <span class="mx-4 text-[15px] font-medium">Apply</span>
           </button>
         </div>
       </div>

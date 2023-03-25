@@ -6,6 +6,11 @@ const email = ref(null);
 const password = ref(null);
 const errors = ref(null);
 
+onMounted(() => {
+  email.value = "dacostap@gmail.com";
+  password.value = "12345678";
+});
+
 const login = async () => {
   console.log(email.value);
   console.log(password.value);

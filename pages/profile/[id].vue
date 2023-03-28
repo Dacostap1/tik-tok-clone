@@ -1,28 +1,60 @@
 <script setup>
 import MainLayout from "~~/layouts/MainLayout.vue";
 import PostUser from "~~/components/PostUser.vue";
+import { storeToRefs } from "pinia";
 
-const { $generalStore } = useNuxtApp();
+const { $userStore, $profileStore, $generalStore } = useNuxtApp();
+const { posts } = storeToRefs($profileStore);
+
+const route = useRoute();
+
+const show = ref(false);
+
+watch(
+  () => posts.value,
+  () => {
+    setTimeout(() => {
+      show.value = true;
+    }, 300);
+  }
+);
+
+const formatText = () => {};
+
+onMounted(async () => {
+  try {
+    console.log(route.params.id);
+    await $profileStore.getProfile(route.params.id);
+  } catch (error) {
+    console.log("xd");
+    console.log(error);
+  }
+});
 </script>
 
 <template>
   <MainLayout>
     <div
+      v-if="$profileStore.name"
       class="w-[calc(100%-90px)] max-w-[1800px] pt-[90px] pr-2 lg:pl-[160px] lg:pr-0 2xl:mx-auto 2xl:pl-[185px]"
     >
       <!-- 100vw = h-screen -->
       <div class="flex w-[calc(100vw-230px)]">
         <img
           class="max-w-[120px] rounded-full"
-          src="https://picsum.photos/id/83/300/320"
+          :src="$profileStore.image"
           alt=""
         />
 
         <div class="ml-5 w-full">
-          <div class="truncate text-[30px] font-bold">User Name</div>
-          <div class="truncate text-[18px] font-bold">User Name</div>
+          <div class="truncate text-[30px] font-bold">
+            {{ $profileStore.name }}
+          </div>
+          <div class="truncate text-[18px] font-bold">
+            {{ $profileStore.name }}
+          </div>
           <button
-            v-if="true"
+            v-if="$profileStore.id === $userStore.id"
             @click="$generalStore.isEditProfileOpen = true"
             class="mt-3 flex items-center rounded-md border py-1.5 px-3.5 text-[15px] font-semibold hover:bg-gray-100"
           >
@@ -60,7 +92,7 @@ const { $generalStore } = useNuxtApp();
       <div
         class="mr-4 max-w-[500px] pt-4 pl-1.5 text-[15px] font-light text-gray-500"
       >
-        This is the bio section
+        {{ $profileStore.bio }}
       </div>
 
       <div class="flex w-full items-center border-b pt-4">
@@ -79,15 +111,9 @@ const { $generalStore } = useNuxtApp();
       <div
         class="mt-4 grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6"
       >
-        <PostUser></PostUser>
-        <PostUser></PostUser>
-        <PostUser></PostUser>
-        <PostUser></PostUser>
-        <PostUser></PostUser>
-        <PostUser></PostUser>
-        <PostUser></PostUser>
-        <PostUser></PostUser>
-        <PostUser></PostUser>
+        <div v-if="show" v-for="post in $profileStore.posts">
+          <PostUser :post="post"></PostUser>
+        </div>
       </div>
     </div>
   </MainLayout>

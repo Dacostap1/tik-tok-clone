@@ -25,6 +25,7 @@ const login = async () => {
     $generalStore.isLoginOpen = false;
   } catch (error) {
     console.log(error);
+    console.log(error.message);
     errors.value = error.response.data.errors;
   }
 };

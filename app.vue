@@ -21,12 +21,16 @@ watch(
 );
 
 onMounted(async () => {
+  //Disable overflow
+  $generalStore.activateOverflow(false);
+
   //Al hacer refresh no mantenga abierto los dialogs
   isLoginOpen.value = false;
   isEditProfileOpen.value = false;
 
   try {
     await $generalStore.hasSessionExpired();
+    await $generalStore.getRandomUsers();
 
     //Si expira intentamos recuperar el usuario
     if ($userStore.id) {

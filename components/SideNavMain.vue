@@ -2,7 +2,19 @@
 import MenuItem from "./MenuItem.vue";
 import MenuItemFollow from "./MenuItemFollow.vue";
 
+const { $generalStore, $userStore } = useNuxtApp();
+
 const route = useRoute();
+const router = useRouter();
+
+const isLoggedIn = (user) => {
+  if (!$userStore.id) {
+    $generalStore.isLoginOpen = true;
+    return;
+  }
+
+  setTimeout(() => router.push(`/profile/${user.id}`), 200);
+};
 </script>
 
 <template>
@@ -40,8 +52,12 @@ const route = useRoute();
 
       <div class="block pt-3 lg:hidden"></div>
 
-      <div class="cursor-pointer">
-        <MenuItemFollow></MenuItemFollow>
+      <div
+        v-for="following in $generalStore.following"
+        @click="isLoggedIn(following)"
+        class="cursor-pointer"
+      >
+        <MenuItemFollow :user="following"></MenuItemFollow>
       </div>
 
       <button class="hidden pt-1.5 pl-2 text-[13px] text-[#F02C56] lg:block">
@@ -58,8 +74,12 @@ const route = useRoute();
 
       <div class="block pt-3 lg:hidden"></div>
 
-      <div class="cursor-pointer">
-        <MenuItemFollow></MenuItemFollow>
+      <div
+        v-for="suggested in $generalStore.suggested"
+        @click="isLoggedIn(suggested)"
+        class="cursor-pointer"
+      >
+        <MenuItemFollow :user="suggested"></MenuItemFollow>
       </div>
 
       <button class="hidden pt-1.5 pl-2 text-[13px] text-[#F02C56] lg:block">

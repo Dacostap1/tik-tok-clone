@@ -9,7 +9,7 @@ export default defineNuxtPlugin((NuxtApp) => {
   return {
     provide: {
       userStore: useUserStore(),
-      profilerStore: useProfileStore(),
+      profileStore: useProfileStore(),
       generalStore: useGeneralStore(),
     },
   };

@@ -31,13 +31,19 @@ export const useUserStore = defineStore("user", {
     },
 
     async getUser() {
-      const user = await $axios.get("/api/user");
+      try {
+        const user = await $axios.get("/api/user");
 
-      this.$state.id = user.data[0].id;
-      this.$state.name = user.data[0].name;
-      this.$state.email = user.data[0].email;
-      this.$state.bio = user.data[0].bio;
-      this.$state.image = user.data[0].image;
+        this.$state.id = user.data[0].id;
+        this.$state.name = user.data[0].name;
+        this.$state.email = user.data[0].email;
+        this.$state.bio = user.data[0].bio;
+        this.$state.image = user.data[0].image;
+
+        console.log(user);
+      } catch (error) {
+        console.log(error);
+      }
     },
 
     async updateUser(name, bio) {
@@ -68,4 +74,5 @@ export const useUserStore = defineStore("user", {
       this.$state.image = "";
     },
   },
+  persist: true,
 });

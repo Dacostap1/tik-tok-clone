@@ -1,5 +1,5 @@
 <script setup>
-const user = defineProps(["user"]);
+const props = defineProps(["user"]);
 </script>
 
 <template>
@@ -9,12 +9,12 @@ const user = defineProps(["user"]);
     <img
       class="mx-auto rounded-full lg:mx-0"
       width="35"
-      src="https://picsum.photos/id/83/300/320"
+      :src="user.image"
       alt=""
     />
     <div class="hidden lg:block lg:pl-2.5">
       <div class="flex items-center">
-        <div class="text-[14px] font-bold">User name</div>
+        <div class="text-[14px] font-bold">{{ props.user.name }}</div>
 
         <div class="relative ml-1 h-[14px] rounded-full bg-[#58d5ec]">
           <Icon
@@ -26,7 +26,7 @@ const user = defineProps(["user"]);
         </div>
       </div>
 
-      <div class="text-[12px] font-light">User name</div>
+      <div class="text-[12px] font-light">{{ props.user.name }}</div>
     </div>
   </div>
 </template>

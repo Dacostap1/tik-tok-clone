@@ -3,18 +3,22 @@ import { Cropper, CircleStencil } from "vue-advanced-cropper";
 import "vue-advanced-cropper/dist/style.css";
 import { storeToRefs } from "pinia";
 
-const { $generalStore, $userStore } = useNuxtApp();
+const { $generalStore, $userStore, $profileStore } = useNuxtApp();
 const { name, bio, image } = storeToRefs($userStore);
+
+const route = useRoute();
 
 const file = ref(null);
 const cropper = ref(null);
 const uploadedImage = ref(null);
+
 const userName = ref(null);
 const userImage = ref(null);
 const userBio = ref(null);
 const isUpdated = ref(null);
 
 onMounted(() => {
+  //inputs
   userName.value = name.value;
   userBio.value = bio.value;
   userImage.value = image.value;
@@ -64,6 +68,10 @@ const cropAndUpdateImage = async () => {
   try {
     await $userStore.updateUserImage(data);
     await $userStore.getUser();
+    await $profileStore.getProfile(route.params.id);
+
+    $generalStore.updateSideMenuImage($generalStore.suggested, $userStore);
+    $generalStore.updateSideMenuImage($generalStore.following, $userStore);
 
     userImage.value = image.value;
     uploadedImage.value = null;
@@ -76,7 +84,8 @@ const updateUserInfo = async () => {
   try {
     await $userStore.updateUser(userName.value, userBio.value);
     await $userStore.getUser();
-    // await $profileStore.getProfile(route.params.id);
+    await $profileStore.getProfile(route.params.id);
+
     userName.value = name.value;
     userBio.value = bio.value;
     setTimeout(() => {

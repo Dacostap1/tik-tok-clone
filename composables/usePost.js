@@ -1,4 +1,6 @@
 export const usePost = (isPostPage) => {
+  const comment = ref(null);
+
   const { $generalStore, $userStore } = useNuxtApp();
 
   const likePost = async (post) => {
@@ -57,5 +59,37 @@ export const usePost = (isPostPage) => {
     }
   };
 
-  return { likePost, unLikePost };
+  const addComment = async () => {
+    try {
+      await $generalStore.addComment(
+        $generalStore.selectedPost.id,
+        comment.value
+      );
+
+      comment.value = null;
+
+      document
+        .getElementById("Comments")
+        .scroll({ top: 0, behavior: "smooth" });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const deleteComment = async (commentId) => {
+    const res = confirm("Are you sure you want to delete this comment?");
+
+    try {
+      if (res) {
+        await $generalStore.deleteComment(
+          $generalStore.selectedPost.id,
+          commentId
+        );
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  return { likePost, unLikePost, comment, addComment, deleteComment };
 };

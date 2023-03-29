@@ -2,12 +2,12 @@
 const { $generalStore, $userStore } = useNuxtApp();
 
 const route = useRoute();
-const router = useRouter();
+// const router = useRouter();
 
-const { likePost, unLikePost } = usePost(true);
+const { likePost, unLikePost, comment, addComment, deleteComment } =
+  usePost(true);
 
 const inputFocused = ref(false);
-const comment = ref(null);
 const video = ref(null);
 const isLoaded = ref(null);
 
@@ -212,7 +212,9 @@ const isLiked = computed(() => {
           <div class="cursor-pointer rounded-full bg-gray-200 p-2">
             <Icon name="bx:bxs-message-rounded-dots" size="25" />
           </div>
-          <span class="pl-2 text-xs font-semibold text-gray-800">43</span>
+          <span class="pl-2 text-xs font-semibold text-gray-800">
+            {{ $generalStore.selectedPost.comments.length }}</span
+          >
         </div>
       </div>
 
@@ -222,17 +224,25 @@ const isLiked = computed(() => {
       >
         <div class="pt-2"></div>
 
-        <div v-if="false" class="mt-6 text-center text-xl text-gray-500">
+        <div
+          v-if="$generalStore.selectedPost.comments.length < 1"
+          class="mt-6 text-center text-xl text-gray-500"
+        >
           No comments...
         </div>
 
-        <div v-else class="mt-4 flex items-center justify-between px-8">
+        <div
+          v-else
+          v-for="comment in $generalStore.selectedPost.comments"
+          :key="comment"
+          class="mt-4 flex items-center justify-between px-8"
+        >
           <div class="itesm-center relative flex w-full">
-            <nuxt-link to="">
+            <nuxt-link :to="`/profile/${comment.user.id}`">
               <img
-                class="absolute mx-auto rounded-full lg:mx-0"
+                class="absolute top-0 mx-auto rounded-full lg:mx-0"
                 width="40"
-                src="https://picsum.photos/id/83/300/320"
+                :src="comment.user.image"
                 alt=""
               />
             </nuxt-link>
@@ -241,28 +251,26 @@ const isLiked = computed(() => {
               <div
                 class="flex items-center justify-between text-[18px] font-semibold"
               >
-                userName
+                {{ comment.user.name }}
                 <Icon
-                  @click="deleteComment()"
+                  v-if="$userStore.id === comment.user.id"
+                  @click="deleteComment(comment.id)"
                   name="material-symbols:delete-outline-sharp"
                   size="25"
                 />
               </div>
               <div class="text-[15px] font-light">
-                Lorem, ipsum dolor sit amet consectetur adipisicing elit. Maxime
-                odit cumque provident illum vero voluptas, eos impedit similique
-                veniam natus et optio fugit commodi at iusto id. Repellendus, ab
-                dolorum!
+                {{ comment.text }}
               </div>
-
-              <div class="mb-28" />
             </div>
           </div>
         </div>
+
+        <div class="mb-28" />
       </div>
 
       <div
-        v-if="true"
+        v-if="$userStore.id"
         id="CreateComent"
         class="absolute bottom-0 flex h-[85px] w-full items-center justify-between border-t-2 bg-white py-5 px-8 lg:max-w-[550px]"
       >
@@ -276,6 +284,7 @@ const isLiked = computed(() => {
         >
           <input
             v-model="comment"
+            @keyup.enter="addComment(comment)"
             @focus="inputFocused = true"
             @blur="inputFocused = false"
             class="w-full rounded-lg bg-[#F1F1F2] p-2 text-[14px] focus:outline-none lg:max-w-[420px]"
@@ -285,7 +294,7 @@ const isLiked = computed(() => {
         </div>
         <button
           :disabled="!comment"
-          @click="addComment()"
+          @click="addComment(comment)"
           :class="comment ? 'cursor-pointer text-[#F02C56]' : 'text-gray-400'"
           class="ml-5 pr-1 text-sm font-semibold"
         >

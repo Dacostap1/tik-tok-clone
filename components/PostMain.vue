@@ -148,7 +148,9 @@ const isLoggedIn = (user) => {
               <button class="cursor-pointer rounded-full bg-gray-200 p-2">
                 <Icon name="bx:bxs-message-rounded-dots" size="20" />
               </button>
-              <span class="text-xs font-semibold text-gray-800">34</span>
+              <span class="text-xs font-semibold text-gray-800">
+                {{ post.comments.length }}
+              </span>
             </div>
 
             <div class="pb-4 text-center">

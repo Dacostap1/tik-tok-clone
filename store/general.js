@@ -43,6 +43,23 @@ export const useGeneralStore = defineStore("general", {
       this.$state.ids = res.data.ids;
     },
 
+    async addComment(postId, comment) {
+      await $axios.post("/api/comments/", {
+        post_id: postId,
+        comment: comment,
+      });
+
+      await this.getPostById(postId);
+    },
+
+    async deleteComment(postId, commentId) {
+      await $axios.delete(`/api/comments/${commentId}`, {
+        post_id: postId,
+      });
+
+      await this.getPostById(postId);
+    },
+
     updateSideMenuImage(array, userStore) {
       array.forEach(function (value, i) {
         console.log("%d: %s", i, value);

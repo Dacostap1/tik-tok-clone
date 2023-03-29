@@ -1,7 +1,8 @@
 export const usePost = (isPostPage) => {
-  const comment = ref(null);
-
   const { $generalStore, $userStore } = useNuxtApp();
+  const router = useRouter();
+
+  const comment = ref(null);
 
   const likePost = async (post) => {
     if (!$userStore.id) {
@@ -91,5 +92,25 @@ export const usePost = (isPostPage) => {
     }
   };
 
-  return { likePost, unLikePost, comment, addComment, deleteComment };
+  const deletePost = async () => {
+    const res = confirm("Are you sure you want to delete this comment?");
+
+    try {
+      if (res) {
+        await $generalStore.deletePost($generalStore.selectedPost.id);
+        router.push(`/profile/${$userStore.id}`);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  return {
+    likePost,
+    unLikePost,
+    comment,
+    addComment,
+    deleteComment,
+    deletePost,
+  };
 };

@@ -2,9 +2,9 @@
 const { $generalStore, $userStore } = useNuxtApp();
 
 const route = useRoute();
-// const router = useRouter();
+const router = useRouter();
 
-const { likePost, unLikePost, comment, addComment, deleteComment } =
+const { likePost, unLikePost, comment, addComment, deleteComment, deletePost } =
   usePost(true);
 
 const inputFocused = ref(false);
@@ -23,7 +23,7 @@ watch(
 );
 
 onMounted(async () => {
-  $generalStore.selectedPost = null;
+  // $generalStore.selectedPost = null;
   try {
     await $generalStore.getPostById(route.params.id);
   } catch (error) {
@@ -55,6 +55,45 @@ onBeforeUnmount(() => {
   video.value.currentTime = 0;
   video.value.src = "";
 });
+
+const loopThroughPostsUp = () => {
+  setTimeout(() => {
+    let isBreak = false;
+
+    for (let i = 0; i < $generalStore.ids.length; i++) {
+      const id = $generalStore.ids[i];
+      if (id > route.params.id) {
+        router.push(`/post/${id}`);
+        isBreak = true;
+        return;
+      }
+    }
+
+    if (!isBreak) {
+      router.push(`/post/${$generalStore.ids[0]}`);
+    }
+  }, 200);
+};
+
+const loopThroughPostsDown = () => {
+  setTimeout(() => {
+    let idArrayReversed = $generalStore.ids.reverse();
+    let isBreak = false;
+
+    for (let i = 0; i < idArrayReversed.length; i++) {
+      const id = idArrayReversed[i];
+      if (id < route.params.id) {
+        router.push(`/post/${id}`);
+        isBreak = true;
+        return;
+      }
+    }
+
+    if (!isBreak) {
+      router.push(`/post/${idArrayReversed[0]}`);
+    }
+  }, 200);
+};
 
 const isLiked = computed(() => {
   let res = $generalStore.selectedPost.likes.find(

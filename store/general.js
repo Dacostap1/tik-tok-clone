@@ -60,6 +60,10 @@ export const useGeneralStore = defineStore("general", {
       await this.getPostById(postId);
     },
 
+    async deletePost(postId) {
+      return await $axios.delete(`/api/posts/${postId}`);
+    },
+
     updateSideMenuImage(array, userStore) {
       array.forEach(function (value, i) {
         console.log("%d: %s", i, value);

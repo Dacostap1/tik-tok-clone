@@ -39,8 +39,6 @@ export const useUserStore = defineStore("user", {
         this.$state.email = user.data[0].email;
         this.$state.bio = user.data[0].bio;
         this.$state.image = user.data[0].image;
-
-        console.log(user);
       } catch (error) {
         console.log(error);
       }
@@ -59,6 +57,16 @@ export const useUserStore = defineStore("user", {
 
     async createPost(data) {
       return await $axios.post("/api/posts", data);
+    },
+
+    async likePost(postId) {
+      return await $axios.post("/api/likes", {
+        post_id: postId,
+      });
+    },
+
+    async unlikePost(likeId) {
+      return await $axios.delete("/api/likes/" + likeId);
     },
 
     async logout() {

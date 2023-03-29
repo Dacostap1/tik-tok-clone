@@ -3,13 +3,14 @@ const props = defineProps(["post"]);
 
 const { $generalStore } = useNuxtApp();
 const router = useRouter();
+const route = useRoute();
 
 const video = ref(null);
 const isLoaded = ref(false);
 
 //SET URL FROM BACK AFTER SHOW A POST
-const displayPost = () => {
-  $generalStore.setBackUrl(`/profile/${route.params.id}`);
+const displayPost = (backUrl, post) => {
+  $generalStore.setBackUrl(backUrl);
   $generalStore.selectedPost = null;
 
   setTimeout(() => {
@@ -52,7 +53,7 @@ const isHover = (bool) => {
 
 <template>
   <div
-    @click="displayPost(post)"
+    @click="displayPost(`/profile/${route.params.id}`, post)"
     @mouseenter="isHover(true)"
     @mouseleave="isHover(false)"
     class="relative cursor-pointer brightness-90 hover:brightness-[1.1]"

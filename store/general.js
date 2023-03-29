@@ -1,4 +1,5 @@
 import { defineStore } from "pinia";
+import { useUserStore } from "./user";
 
 import axios from "~~/plugins/axios";
 const $axios = axios().provide.axios;
@@ -10,7 +11,7 @@ export const useGeneralStore = defineStore("general", {
     selectedPost: null,
     ids: null,
     isBackUrl: "/",
-    posts: null,
+    posts: [],
     suggested: [],
     following: [],
   }),
@@ -28,6 +29,18 @@ export const useGeneralStore = defineStore("general", {
 
       this.suggested = res.data.suggested;
       this.following = res.data.following;
+    },
+
+    async getAllPosts() {
+      const res = await $axios.get(`/api/posts`);
+      this.posts = res.data;
+    },
+
+    async getPostById(id) {
+      const res = await $axios.get(`/api/posts/${id}`);
+
+      this.$state.selectedPost = res.data.post[0];
+      this.$state.ids = res.data.ids;
     },
 
     updateSideMenuImage(array, userStore) {
@@ -51,8 +64,8 @@ export const useGeneralStore = defineStore("general", {
             case 401:
             case 419:
             case 503:
-              // useUserStore().resetUser();
-              // window.location.href = "/";
+              useUserStore().resetUser();
+              window.location.href = "/";
               break;
             case 500:
               alert("Oops, something went wrong!");
@@ -64,4 +77,5 @@ export const useGeneralStore = defineStore("general", {
       );
     },
   },
+  persist: true,
 });

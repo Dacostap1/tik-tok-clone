@@ -1,4 +1,11 @@
 <script setup>
+const { $generalStore, $userStore } = useNuxtApp();
+
+const route = useRoute();
+const router = useRouter();
+
+const { likePost, unLikePost } = usePost(true);
+
 const inputFocused = ref(false);
 const comment = ref(null);
 const video = ref(null);
@@ -10,30 +17,54 @@ watch(
     if (isLoaded.value) {
       setTimeout(() => {
         video.value.play();
-      }, 500);
+      }, 100);
     }
   }
 );
 
-onMounted(() => {
-  isLoaded.value = true;
-  video.value.play();
+onMounted(async () => {
+  $generalStore.selectedPost = null;
+  try {
+    await $generalStore.getPostById(route.params.id);
+  } catch (error) {
+    console.log(error);
+    // if (error && error.response.status === 400) {
+    //   router.push("/");
+    // }
+  }
 
-  // video.value.addEventListener("loadeddata", (e) => {
-  //   console.log(e.target);
-  //   if (e.target) {
-  //     setTimeout(() => {
-  //       isLoaded.value = true;
-  //       console.log(isLoaded.value);
-  //     }, 500);
-  //   }
-  // });
+  if (video.value) {
+    console.log(video.value);
+    //Necesario para que detecte el evento loadeddata, no tiene relacion con el atributo autoplay
+    video.value.load();
+
+    video.value.addEventListener("loadeddata", (e) => {
+      console.log(e.target);
+      if (e.target) {
+        setTimeout(() => {
+          isLoaded.value = true;
+          console.log(isLoaded.value);
+        }, 200);
+      }
+    });
+  }
 });
 
 onBeforeUnmount(() => {
   video.value.pause();
   video.value.currentTime = 0;
   video.value.src = "";
+});
+
+const isLiked = computed(() => {
+  let res = $generalStore.selectedPost.likes.find(
+    (like) => like.user_id === $userStore.id
+  );
+
+  if (res) {
+    return true;
+  }
+  return false;
 });
 </script>
 
@@ -42,15 +73,18 @@ onBeforeUnmount(() => {
     id="PostPage"
     class="fixed top-0 left-0 z-50 h-full w-full justify-between overflow-auto bg-black lg:flex lg:overflow-hidden"
   >
-    <div class="relative h-full lg:w-[calc(100%-540px)]">
+    <div
+      v-if="$generalStore.selectedPost"
+      class="relative h-full lg:w-[calc(100%-540px)]"
+    >
       <nuxt-link
         class="absolute z-20 m-5 rounded-full bg-gray-700 p-1.5 hover:bg-gray-800"
-        to=""
+        :href="$generalStore.isBackUrl"
       >
         <Icon name="material-symbols:close" color="#FFFFFF" size="27" />
       </nuxt-link>
 
-      <div v-if="true">
+      <div v-if="$generalStore.ids.length > 1">
         <button
           :disabled="!isLoaded"
           @click="loopThroughPostsUp"
@@ -76,9 +110,9 @@ onBeforeUnmount(() => {
       />
 
       <video
-        v-if="true"
+        v-if="$generalStore.selectedPost.video"
         class="absolute z-[-1] my-auto h-screen object-cover"
-        src="/yates.mp4"
+        :src="$generalStore.selectedPost.video"
       ></video>
 
       <div
@@ -95,18 +129,18 @@ onBeforeUnmount(() => {
 
       <div class="bg-black bg-opacity-70 lg:min-w-[480]">
         <video
-          v-if="true"
+          v-if="$generalStore.selectedPost.video"
           ref="video"
           loop
           muted
           class="mx-auto h-screen"
-          src="/yates.mp4"
+          :src="$generalStore.selectedPost.video"
         ></video>
       </div>
     </div>
 
     <div
-      v-if="true"
+      v-if="$generalStore.selectedPost"
       id="InfoSection"
       class="relative h-full w-full bg-white lg:max-w-[550px]"
     >
@@ -114,26 +148,31 @@ onBeforeUnmount(() => {
 
       <div class="flex items-center justify-between px-8">
         <div class="flex items-center">
-          <nuxt-link to="">
+          <nuxt-link :href="`/profile/${$generalStore.selectedPost.user.id}`">
             <img
               class="mx-auto rounded-full lg:mx-0"
               width="40"
-              src="https://picsum.photos/id/83/300/320"
+              :src="$generalStore.selectedPost.user.image"
               alt=""
             />
           </nuxt-link>
 
           <div class="ml-3 pt-0.5">
-            <div class="text-[17px] font-semibold">User name</div>
+            <div class="text-[17px] font-semibold">
+              {{ $generalStore.selectedPost.user.name }}
+            </div>
             <div class="-mt-5 text-[13px] font-light">
-              User name
+              {{ $generalStore.selectedPost.user.name }}
               <span class="relative -top-[2px] pr-0.5 text-[30px]">.</span>
-              <span class="font-medium">Date here</span>
+              <span class="font-medium">
+                {{ $generalStore.selectedPost.created_at }}</span
+              >
             </div>
           </div>
         </div>
 
         <Icon
+          v-if="$userStore.id === $generalStore.selectedPost.user.id"
           @click="deletePost()"
           class="cursor-pointer"
           name="material-symbols:delete-outline-sharp"
@@ -141,17 +180,21 @@ onBeforeUnmount(() => {
         />
       </div>
 
-      <div class="mt-4 px-8 text-sm">This is the post text</div>
+      <div class="mt-4 px-8 text-sm">{{ $generalStore.selectedPost.text }}</div>
 
       <div class="mt-4 px-8 text-sm font-bold">
         <Icon name="mdi:music" size="17" />
-        original sound - User name
+        original sound - {{ $generalStore.selectedPost.user.name }}
       </div>
 
       <div class="mt-8 flex items-center px-8">
         <div class="flex items-center pb-4 text-center">
           <button
-            @click="isLiked ? unlikePost() : likePost()"
+            @click="
+              isLiked
+                ? unLikePost($generalStore.selectedPost)
+                : likePost($generalStore.selectedPost)
+            "
             class="cursor-pointer rounded-full bg-gray-200 p-2"
           >
             <Icon
@@ -161,7 +204,7 @@ onBeforeUnmount(() => {
             />
           </button>
           <span class="pl-2 pr-4 text-xs font-semibold text-gray-800">
-            123
+            {{ $generalStore.selectedPost.likes.length }}
           </span>
         </div>
 

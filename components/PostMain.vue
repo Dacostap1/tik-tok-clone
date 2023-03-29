@@ -1,29 +1,83 @@
 <script setup>
+const props = defineProps(["post"]);
+const { post } = toRefs(props);
+
+const { $generalStore, $userStore } = useNuxtApp();
+const router = useRouter();
+
+const { likePost, unLikePost } = usePost();
+
 const video = ref(null);
 
+let observer;
+
 onMounted(() => {
-  video.value.play();
+  observer = new IntersectionObserver(
+    function (entries) {
+      if (entries[0].isIntersecting) {
+        console.log("Element is playing " + post.value.id);
+        video.value.play();
+      } else {
+        console.log("Element is paused " + post.value.id);
+        video.value.pause();
+      }
+    },
+    { threshold: [0.6] } //porcentaje de la visibilidad del objetivo se debe ejecutar la devolución de llamada del observado
+  );
+
+  observer.observe(document.getElementById(`PostMain-${post.value.id}`));
 });
+
+onBeforeUnmount(() => {
+  video.value.pause();
+  video.value.currentTime = 0;
+  video.value.src = "";
+
+  observer.unobserve(document.getElementById(`PostMain-${post.value.id}`));
+});
+
+//SET URL FROM BACK AFTER SHOW A POST
+const displayPost = (backUrl, post) => {
+  $generalStore.setBackUrl(backUrl);
+  $generalStore.selectedPost = null;
+
+  setTimeout(() => router.push(`/post/${post.id}`), 200);
+};
+
+//fix
+const isLiked = computed(() => {
+  const res = post.value.likes.find((like) => like.user_id === $userStore.id);
+  console.log(res);
+  if (res) {
+    return true;
+  }
+  return false;
+});
+
+//Va para un composable
+const isLoggedIn = (user) => {
+  if (!$userStore.id) {
+    $generalStore.isLoginOpen = true;
+    return;
+  }
+
+  setTimeout(() => router.push(`/profile/${user.id}`), 200);
+};
 </script>
 
 <template>
-  <div id="PostMain" class="flex border-b py-6">
-    <div class="cursor-pointer">
-      <img
-        class="rounded-full"
-        width="60"
-        src="https://picsum.photos/id/83/300/320"
-        alt=""
-      />
+  <div :id="`PostMain-${post.id}`" class="flex border-b py-6">
+    <div @click="isLoggedIn(post.user)" class="cursor-pointer">
+      <img class="rounded-full" width="60" :src="post.user.image" alt="" />
     </div>
     <div class="w-full px-4 pl-3">
       <div class="flex items-center justify-between pb-0.5">
-        <button>
+        <button @@click="isLoggedIn(post.user)">
           <span class="cursor-pointer font-bold hover:underline">
-            User name
+            {{ post.user.name }}
           </span>
           <span class="cursor-pointer text-[13px] font-light text-gray-500">
-            User name
+            {{ post.user.name }}
           </span>
         </button>
 
@@ -37,7 +91,7 @@ onMounted(() => {
       <div
         class="max-w-[300px] break-words pb-0.5 text-[15px] md:max-w-[400px]"
       >
-        This is some text
+        {{ post.text }}
       </div>
 
       <div class="pb-0.5 text-[14px] text-gray-500">
@@ -52,6 +106,7 @@ onMounted(() => {
 
       <div class="mt-2.5 flex">
         <div
+          @click="displayPost('/', post)"
           class="relative flex max-h-[580px] min-h-[480px] max-w-[260px] cursor-pointer items-center rounded-xl bg-black"
         >
           <video
@@ -59,7 +114,7 @@ onMounted(() => {
             loop
             muted
             class="mx-auto h-full rounded-xl object-cover"
-            src="/yates.mp4"
+            :src="post.video"
           ></video>
 
           <img
@@ -74,10 +129,19 @@ onMounted(() => {
         <div class="relative mr-[75px]">
           <div class="absolute bottom-0 pl-2">
             <div class="pb-4 text-center">
-              <button class="cursor-pointer rounded-full bg-gray-200 p-2">
-                <Icon name="mdi:heart" size="20" />
+              <button
+                @click="isLiked ? unLikePost(post) : likePost(post)"
+                class="cursor-pointer rounded-full bg-gray-200 p-2"
+              >
+                <Icon
+                  name="mdi:heart"
+                  size="20"
+                  :color="isLiked ? '#F02C56' : ''"
+                />
               </button>
-              <span class="text-xs font-semibold text-gray-800">34</span>
+              <span class="text-xs font-semibold text-gray-800">{{
+                post.likes.length
+              }}</span>
             </div>
 
             <div class="pb-4 text-center">

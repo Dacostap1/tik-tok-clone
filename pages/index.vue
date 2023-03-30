@@ -4,6 +4,8 @@ import PostMain from "~~/components/PostMain.vue";
 
 const { $generalStore } = useNuxtApp();
 
+definePageMeta({ middleware: "auth" });
+
 onMounted(async () => {
   try {
     await $generalStore.getAllPosts();

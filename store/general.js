@@ -9,11 +9,11 @@ export const useGeneralStore = defineStore("general", {
     isLoginOpen: false,
     isEditProfileOpen: false,
     selectedPost: null,
-    ids: null,
-    isBackUrl: "/",
+    ids: [],
     posts: [],
     suggested: [],
     following: [],
+    isBackUrl: "/",
   }),
   actions: {
     activateOverflow(val) {
@@ -36,11 +36,12 @@ export const useGeneralStore = defineStore("general", {
       this.posts = res.data;
     },
 
+    //TODO: Solo trae ids por usuario pero desde el home deberian ser todos
     async getPostById(id) {
       const res = await $axios.get(`/api/posts/${id}`);
 
       this.$state.selectedPost = res.data.post[0];
-      this.$state.ids = res.data.ids;
+      this.$state.ids = res.data.ids; //aqui
     },
 
     async addComment(postId, comment) {
@@ -74,7 +75,7 @@ export const useGeneralStore = defineStore("general", {
       });
     },
 
-    async hasSessionExpired() {
+    async setAxiosInterceptors() {
       await $axios.interceptors.response.use(
         (response) => {
           //Call was successfull, continue

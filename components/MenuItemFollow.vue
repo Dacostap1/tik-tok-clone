@@ -1,5 +1,8 @@
 <script setup>
-const props = defineProps(["user"]);
+import { useHelper } from "~/composables/useHelper";
+const { toLowerCaseAndTrim } = useHelper();
+
+defineProps(["user"]);
 </script>
 
 <template>
@@ -14,7 +17,9 @@ const props = defineProps(["user"]);
     />
     <div class="hidden lg:block lg:pl-2.5">
       <div class="flex items-center">
-        <div class="text-[14px] font-bold">{{ props.user.name }}</div>
+        <div class="text-[14px] font-bold">
+          {{ toLowerCaseAndTrim(user.name) }}
+        </div>
 
         <div class="relative ml-1 h-[14px] rounded-full bg-[#58d5ec]">
           <Icon
@@ -26,7 +31,7 @@ const props = defineProps(["user"]);
         </div>
       </div>
 
-      <div class="text-[12px] font-light">{{ props.user.name }}</div>
+      <div class="text-[12px] font-light">{{ user.name }}</div>
     </div>
   </div>
 </template>

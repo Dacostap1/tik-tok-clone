@@ -2,7 +2,7 @@
 import Login from "./Login.vue";
 import Register from "./Register.vue";
 
-const { $userStore, $generalStore } = useNuxtApp();
+const { $generalStore } = useNuxtApp();
 
 const isRegister = ref(true);
 </script>

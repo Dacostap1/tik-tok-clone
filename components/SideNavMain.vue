@@ -7,8 +7,8 @@ const { $generalStore, $userStore } = useNuxtApp();
 const route = useRoute();
 const router = useRouter();
 
-const isLoggedIn = (user) => {
-  if (!$userStore.id) {
+const showProfile = (user) => {
+  if (!$userStore.isAuthenticated) {
     $generalStore.isLoginOpen = true;
     return;
   }
@@ -54,7 +54,7 @@ const isLoggedIn = (user) => {
 
       <div
         v-for="following in $generalStore.following"
-        @click="isLoggedIn(following)"
+        @click="showProfile(following)"
         class="cursor-pointer"
       >
         <MenuItemFollow :user="following"></MenuItemFollow>
@@ -76,7 +76,7 @@ const isLoggedIn = (user) => {
 
       <div
         v-for="suggested in $generalStore.suggested"
-        @click="isLoggedIn(suggested)"
+        @click="showProfile(suggested)"
         class="cursor-pointer"
       >
         <MenuItemFollow :user="suggested"></MenuItemFollow>

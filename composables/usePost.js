@@ -4,6 +4,14 @@ export const usePost = (isPostPage) => {
 
   const comment = ref(null);
 
+  //SET URL FROM BACK AFTER SHOW A POST
+  const displayPost = (backUrl, post) => {
+    $generalStore.setBackUrl(backUrl);
+    $generalStore.selectedPost = null;
+
+    setTimeout(() => router.push(`/post/${post.id}`), 200);
+  };
+
   const likePost = async (post) => {
     if (!$userStore.id) {
       $generalStore.isLoginOpen = true;
@@ -106,6 +114,7 @@ export const usePost = (isPostPage) => {
   };
 
   return {
+    displayPost,
     likePost,
     unLikePost,
     comment,

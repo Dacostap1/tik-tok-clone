@@ -2,12 +2,15 @@
 import MainLayout from "~~/layouts/MainLayout.vue";
 import PostUser from "~~/components/PostUser.vue";
 import { storeToRefs } from "pinia";
+import { useHelper } from "~/composables/useHelper";
 
 const { $userStore, $profileStore, $generalStore } = useNuxtApp();
 const { posts } = storeToRefs($profileStore);
 
-const route = useRoute();
+definePageMeta({ middleware: "auth" });
 
+const route = useRoute();
+const { toLowerCaseAndTrim } = useHelper();
 const show = ref(false);
 
 watch(
@@ -19,14 +22,12 @@ watch(
   }
 );
 
-const formatText = () => {};
 
 onMounted(async () => {
   try {
     console.log(route.params.id);
     await $profileStore.getProfile(route.params.id);
   } catch (error) {
-    console.log("xd");
     console.log(error);
   }
 });
@@ -48,9 +49,9 @@ onMounted(async () => {
 
         <div class="ml-5 w-full">
           <div class="truncate text-[30px] font-bold">
-            {{ $profileStore.name }}
+            {{ toLowerCaseAndTrim($profileStore.name) }}
           </div>
-          <div class="truncate text-[18px] font-bold">
+          <div class="truncate text-[18px]">
             {{ $profileStore.name }}
           </div>
           <button

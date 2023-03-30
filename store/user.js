@@ -9,6 +9,9 @@ export const useUserStore = defineStore("user", {
     bio: "",
     image: "",
   }),
+  getters: {
+    isAuthenticated: (state) => state.id != "",
+  },
   actions: {
     async getToken() {
       await $axios.get("/sanctum/csrf-cookie");

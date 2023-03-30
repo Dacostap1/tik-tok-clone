@@ -1,22 +1,13 @@
 <script setup>
 const props = defineProps(["post"]);
 
-const { $generalStore } = useNuxtApp();
+const { displayPost } = usePost();
+
 const router = useRouter();
 const route = useRoute();
 
 const video = ref(null);
 const isLoaded = ref(false);
-
-//SET URL FROM BACK AFTER SHOW A POST
-const displayPost = (backUrl, post) => {
-  $generalStore.setBackUrl(backUrl);
-  $generalStore.selectedPost = null;
-
-  setTimeout(() => {
-    router.push(`/post/${post.id}`);
-  }, 300);
-};
 
 onMounted(() => {
   if (video.value) {
@@ -29,7 +20,6 @@ onMounted(() => {
       if (e.target) {
         setTimeout(() => {
           isLoaded.value = true;
-          console.log(isLoaded.value);
         }, 200);
       }
     });

@@ -1,8 +1,14 @@
 <script setup>
+import { useHelper } from "~/composables/useHelper";
+
 const { $generalStore, $userStore } = useNuxtApp();
 
 const route = useRoute();
 const router = useRouter();
+
+definePageMeta({ middleware: "auth" });
+
+const { toLowerCaseAndTrim } = useHelper();
 
 const { likePost, unLikePost, comment, addComment, deleteComment, deletePost } =
   usePost(true);
@@ -23,14 +29,11 @@ watch(
 );
 
 onMounted(async () => {
-  // $generalStore.selectedPost = null;
   try {
     await $generalStore.getPostById(route.params.id);
   } catch (error) {
     console.log(error);
-    // if (error && error.response.status === 400) {
-    //   router.push("/");
-    // }
+    router.push("/");
   }
 
   if (video.value) {
@@ -51,9 +54,14 @@ onMounted(async () => {
 });
 
 onBeforeUnmount(() => {
-  video.value.pause();
-  video.value.currentTime = 0;
-  video.value.src = "";
+  $generalStore.selectedPost = null;
+
+  //Si no encuentra el post no hay elemento que pausar
+  if (video.value) {
+    video.value.pause();
+    video.value.currentTime = 0;
+    video.value.src = "";
+  }
 });
 
 const loopThroughPostsUp = () => {
@@ -198,7 +206,7 @@ const isLiked = computed(() => {
 
           <div class="ml-3 pt-0.5">
             <div class="text-[17px] font-semibold">
-              {{ $generalStore.selectedPost.user.name }}
+              {{ toLowerCaseAndTrim($generalStore.selectedPost.user.name) }}
             </div>
             <div class="-mt-5 text-[13px] font-light">
               {{ $generalStore.selectedPost.user.name }}
@@ -223,7 +231,8 @@ const isLiked = computed(() => {
 
       <div class="mt-4 px-8 text-sm font-bold">
         <Icon name="mdi:music" size="17" />
-        original sound - {{ $generalStore.selectedPost.user.name }}
+        original sound -
+        {{ toLowerCaseAndTrim($generalStore.selectedPost.user.name) }}
       </div>
 
       <div class="mt-8 flex items-center px-8">

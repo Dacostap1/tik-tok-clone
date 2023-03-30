@@ -8,6 +8,7 @@ const showMenu = ref(false);
 onMounted(() => {
   document.addEventListener("mouseup", (e) => {
     if (!showMenu.value) return;
+
     const popupMenu = document.getElementById("PopupMenu");
     if (!popupMenu.contains(e.target)) {
       showMenu.value = false;
@@ -15,17 +16,19 @@ onMounted(() => {
   });
 });
 
-const isLoggedIn = () => {
-  if ($userStore.id) {
-    router.push("/upload");
-  } else {
+const uploadPost = () => {
+  if (!$userStore.isAuthenticated) {
     $generalStore.isLoginOpen = true;
+    return;
   }
+
+  router.push("/upload");
 };
 
 const logout = () => {
   try {
     $userStore.logout();
+    showMenu.value = false;
     router.push("/");
   } catch (error) {
     console.log(error);
@@ -66,7 +69,7 @@ const logout = () => {
         class="flex w-full min-w-[275px] max-w-[320px] items-center justify-end gap-3"
       >
         <button
-          @click="isLoggedIn"
+          @click="uploadPost"
           class="flex items-center rounded-sm border px-3 py-[6px] hover:bg-gray-100"
         >
           <Icon name="mdi:plus" color="#000000" size="22"></Icon>

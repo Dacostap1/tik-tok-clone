@@ -7,8 +7,6 @@ let icon = ref("");
 if (iconString.value === "For You") icon.value = "mdi:home";
 if (iconString.value === "Following") icon.value = "ci:group";
 if (iconString.value === "Live") icon.value = "ri:live-line";
-
-console.log(icon.value);
 </script>
 
 <template>

@@ -1,7 +1,5 @@
 <script setup>
-import Navbar from "~~/components/Navbar.vue";
-
-const route = useRoute();
+import Navbar from "~/components/Navbar.vue";
 </script>
 
 <template>

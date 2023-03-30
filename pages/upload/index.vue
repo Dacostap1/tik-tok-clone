@@ -1,6 +1,8 @@
 <script setup>
 import UploadLayout from "~~/layouts/UploadLayout.vue";
 
+definePageMeta({ middleware: "auth" });
+
 const { $userStore } = useNuxtApp();
 const router = useRouter();
 

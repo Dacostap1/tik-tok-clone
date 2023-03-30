@@ -15,7 +15,6 @@ export const useProfileStore = defineStore("profile", {
   actions: {
     async getProfile(userId) {
       try {
-        this.resetState();
         const res = await $axios.get(`/api/profile/${userId}`);
 
         console.log(res.data.user[0]);

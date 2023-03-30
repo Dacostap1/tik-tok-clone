@@ -1,11 +1,14 @@
 <script setup>
+import { useHelper } from "~/composables/useHelper";
+const { toLowerCaseAndTrim } = useHelper();
+
 const props = defineProps(["post"]);
 const { post } = toRefs(props);
 
 const { $generalStore, $userStore } = useNuxtApp();
 const router = useRouter();
 
-const { likePost, unLikePost } = usePost();
+const { displayPost, likePost, unLikePost } = usePost();
 
 const video = ref(null);
 
@@ -36,27 +39,19 @@ onBeforeUnmount(() => {
   observer.unobserve(document.getElementById(`PostMain-${post.value.id}`));
 });
 
-//SET URL FROM BACK AFTER SHOW A POST
-const displayPost = (backUrl, post) => {
-  $generalStore.setBackUrl(backUrl);
-  $generalStore.selectedPost = null;
-
-  setTimeout(() => router.push(`/post/${post.id}`), 200);
-};
-
 //fix
 const isLiked = computed(() => {
   const res = post.value.likes.find((like) => like.user_id === $userStore.id);
-  console.log(res);
+
   if (res) {
     return true;
   }
   return false;
 });
 
-//Va para un composable
-const isLoggedIn = (user) => {
-  if (!$userStore.id) {
+const showProfile = (user) => {
+  console.log("err");
+  if (!$userStore.isAuthenticated) {
     $generalStore.isLoginOpen = true;
     return;
   }
@@ -67,16 +62,18 @@ const isLoggedIn = (user) => {
 
 <template>
   <div :id="`PostMain-${post.id}`" class="flex border-b py-6">
-    <div @click="isLoggedIn(post.user)" class="cursor-pointer">
+    <div @click="showProfile(post.user)" class="cursor-pointer">
       <img class="rounded-full" width="60" :src="post.user.image" alt="" />
     </div>
     <div class="w-full px-4 pl-3">
       <div class="flex items-center justify-between pb-0.5">
-        <button @@click="isLoggedIn(post.user)">
+        <button @click="showProfile(post.user)">
           <span class="cursor-pointer font-bold hover:underline">
-            {{ post.user.name }}
+            {{ toLowerCaseAndTrim(post.user.name) }}
           </span>
-          <span class="cursor-pointer text-[13px] font-light text-gray-500">
+          <span
+            class="text-light cursor-pointer pl-1 text-[13px] text-gray-500"
+          >
             {{ post.user.name }}
           </span>
         </button>

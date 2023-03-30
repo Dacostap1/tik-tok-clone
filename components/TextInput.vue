@@ -1,5 +1,6 @@
 <script setup>
-const emit = defineEmits(["update:input"]); //en lugar de modelValue usamos input como valor custom
+const emit = defineEmits(["update:input"]);
+//en lugar de modelValue usamos input como valor custom
 
 const props = defineProps([
   "input",

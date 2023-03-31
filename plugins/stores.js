@@ -5,7 +5,7 @@ import { useGeneralStore } from "~/store/general";
 // Genera acceso global a nuestros stores
 // const { $userStore } = useNuxtApp();
 
-export default defineNuxtPlugin((NuxtApp) => {
+export default defineNuxtPlugin((nuxtApp) => {
   return {
     provide: {
       userStore: useUserStore(),

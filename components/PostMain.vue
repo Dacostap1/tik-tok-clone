@@ -72,7 +72,7 @@ const showProfile = (user) => {
             {{ toLowerCaseAndTrim(post.user.name) }}
           </span>
           <span
-            class="text-light cursor-pointer pl-1 text-[13px] text-gray-500"
+            class="text-light block cursor-pointer text-left text-[13px] text-gray-500 md:inline-block md:pl-1"
           >
             {{ post.user.name }}
           </span>
@@ -123,7 +123,7 @@ const showProfile = (user) => {
 
         <!-- BOTONES LATERALES -->
 
-        <div class="relative mr-[75px]">
+        <div class="relative mr-[50px]">
           <div class="absolute bottom-0 pl-2">
             <div class="pb-4 text-center">
               <button

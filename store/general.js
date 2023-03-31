@@ -75,7 +75,11 @@ export const useGeneralStore = defineStore("general", {
       });
     },
 
-    async setAxiosInterceptors() {
+    async setAxiosConfig() {
+      //Debe ir en el componente principal para experar que se cargue Nuxt
+      const { $config } = useNuxtApp();
+      $axios.defaults.baseURL = $config.public.apiBase;
+
       await $axios.interceptors.response.use(
         (response) => {
           //Call was successfull, continue

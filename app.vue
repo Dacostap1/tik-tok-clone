@@ -29,7 +29,7 @@ onMounted(async () => {
   isEditProfileOpen.value = false;
 
   try {
-    await $generalStore.setAxiosInterceptors();
+    await $generalStore.setAxiosConfig();
     await $generalStore.getRandomUsers();
 
     //Si expira intentamos recuperar el usuario

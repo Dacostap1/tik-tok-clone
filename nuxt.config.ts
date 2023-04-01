@@ -9,10 +9,10 @@ export default defineNuxtConfig({
     apiSecret: "123",
     // Keys within public are also exposed client-side
     public: {
-      apiBase: "/api",
+      apiBase: process.env.NUXT_PUBLIC_API_BASE || "/api",
     },
   },
-  // ssr: false,
+  ssr: true,
   pages: true,
   css: ["~/assets/css/main.css"],
   modules: ["nuxt-icon", "@pinia/nuxt", "@pinia-plugin-persistedstate/nuxt"],
